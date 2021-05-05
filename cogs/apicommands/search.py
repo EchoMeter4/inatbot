@@ -3,7 +3,8 @@ from tools import utility
 import discord
 import aiohttp
 import traceback
-
+from tools import inat
+from inat import find
 
 class Search(commands.Cog):
     def __init__(self, client):
@@ -96,3 +97,47 @@ class Search(commands.Cog):
 
 def setup(client):
     client.add_cog(Search(client))
+
+class find(commands.Cog):
+    def __init__(self, client):
+        self.client = client
+
+    @bot.command()
+    async def find(self, ctx, *, name):
+        if " " not in name:
+            await ctx.send("``Arugment Missing. The command is :searcg <genus> <species>``")
+        else: 
+            image_link = find(name)['image_list']
+            len_of_list = len(image_link)
+            url = ('https://www.inaturalist.org/taxa/' + str(find(name)['id'])  + "-" + link_name(name))
+            if len_of_list <= 1:
+                page1 = discord.Embed(title = name, url = url, description = "(1/1)", color=0xEBC815)
+                page1.set_image(url = str(find(name)['image_list'][0]))
+                await ctx.send(embed = page1)
+            elif len_of_list > 1:
+                class Pictures(menus.ListPageSource):
+                    def __init__(self, data):
+                        super().__init__(data, per_page=1)
+                    async def format_page(self, menu, entries):
+                        embed = discord.Embed(title=name, url = url, description=f"({menu.current_page + 1}/{self.get_max_pages()})", color=0xEBC815)
+                        embed.set_image(url=entries)
+                        return embed
+                class WaspMenu(menus.MenuPages):
+                    def __init__(self, source):
+                        super().__init__(source=source, timeout=3600)
+                        self.remove_button('\N{BLACK SQUARE FOR STOP}\ufe0f')
+                    # Makes it so the bot removes the reaction after reacting.
+                    async def update(self, payload):
+                        if self._can_remove_reactions:
+                            if payload.event_type == 'REACTION_ADD':
+                                message = self.bot.get_channel(payload.channel_id).get_partial_message(
+                                payload.message_id)
+                                await message.remove_reaction(payload.emoji, payload.member)
+                            elif payload.event_type == 'REACTION_REMOVE':
+                                return
+                        await super().update(payload)
+                pages = WaspMenu(source=Pictures(image_link))
+                await pages.start(ctx)
+                    
+def setup(client):
+    client.add_cog(find(client))
