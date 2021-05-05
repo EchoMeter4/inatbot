@@ -2,7 +2,7 @@ import aiohttp
 
 
 # Gets the images of the wasp from the iNaturalist API
-def find(name):
+async def find(name):
     image_url = []
 
     api_version = 1

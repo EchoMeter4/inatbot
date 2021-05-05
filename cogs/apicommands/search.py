@@ -96,17 +96,19 @@ class Search(commands.Cog):
 
     @commands.command()
     async def find(self, ctx, *, name):
-        if " " not in name:
-            await ctx.send(f"``Arugment Missing. The command is {self.client.command_prefix}find <genus> <species>``")
+        try:
+            image_find = await find(name)
+            image_link = image_find['image_list']
+        except:
+            await ctx.send("This species was not found.")
             return
 
-        image_link = find(name)['image_list']
         len_of_list = len(image_link)
-        url = f"https://www.inaturalist.org/taxa/{find(name)['id']}-{name.replace(' ', '-')}"
+        url = f"https://www.inaturalist.org/taxa/{image_find['id']}-{name.replace(' ', '-')}"
 
         if len_of_list <= 1:
             page1 = discord.Embed(title=name, url=url, description="(1/1)", color=0xEBC815)
-            page1.set_image(url=str(find(name)['image_list'][0]))
+            page1.set_image(url=str(image_link[0]))
             await ctx.send(embed=page1)
             return
 
