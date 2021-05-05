@@ -14,4 +14,4 @@ if __name__ == '__main__':
         else:
             print("Successfully loaded " + cog)
 
-    client.run("ODM4NTU1MzQ0MzE3MDU0OTk3.YI8zhQ.khJmbW2rQNsHAv6KcDgixzIeboI")
+    client.run("TOKEN")
