@@ -1,4 +1,5 @@
 from bot import iNatBot
+import os
 
 cogs = ['apicommands.search']
 
@@ -14,4 +15,5 @@ if __name__ == '__main__':
         else:
             print("Successfully loaded " + cog)
 
-    client.run("ODM4NTU1MzQ0MzE3MDU0OTk3.YI8zhQ.khJmbW2rQNsHAv6KcDgixzIeboI")
+    # Put your bot token as an environment variable
+    client.run(os.environ.get("TOKEN"))
